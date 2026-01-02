@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,8 +54,10 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: Navigate to Scan QR screen
-                print('Scan QR button pressed');
+                Navigator.push(context ,
+                  MaterialPageRoute(builder: (context) => ScanQRScreen()),
+                );
+                
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -140,6 +143,89 @@ class _GenerateQRScreenState extends State<GenerateQRScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ScanQRScreen extends StatefulWidget {
+  const ScanQRScreen({super.key});
+
+  @override
+  State<ScanQRScreen> createState() => _ScanQRScreenState();
+}
+
+class _ScanQRScreenState extends State<ScanQRScreen> {
+  String scannedData = '';
+  MobileScannerController cameraController = MobileScannerController();
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scan QR Code'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.flash_on),
+            onPressed: () {
+              cameraController.toggleTorch();
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 3,
+            child: MobileScanner(
+              controller: cameraController,
+              onDetect: (BarcodeCapture capture) {
+                final List<Barcode> barcodes = capture.barcodes;
+                for (final barcode in barcodes) {
+                  if (barcode.rawValue != null) {
+                    setState(() {
+                      scannedData = barcode.rawValue!;
+                    });
+                    print('Scanned: $scannedData');
+                  }
+                }
+              },
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Scanned Result:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    scannedData.isEmpty ? 'No QR code scanned yet' : scannedData,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: scannedData.isEmpty ? Colors.grey : Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
