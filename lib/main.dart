@@ -39,7 +39,10 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 50),
             ElevatedButton(
               onPressed: () {
-                print("Generate QR Code");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GenerateQRScreen()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -58,6 +61,67 @@ class HomeScreen extends StatelessWidget {
               child: Text('Scan QR Code'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class GenerateQRScreen extends StatefulWidget {
+  const GenerateQRScreen({super.key});
+
+  @override
+  State<GenerateQRScreen> createState() => _GenerateQRScreenState();
+}
+
+class _GenerateQRScreenState extends State<GenerateQRScreen> {
+  String data = ''; // This will store the text user enters
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Generate QR Code'), centerTitle: true),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Enter text to generate QR Code',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter text',
+                  hintText: 'Type something...',
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    data = controller.text;
+                  });
+                  print('Generated QR for: $data');
+                },
+                child: Text('Generate QR Code'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                ),
+              ),
+              SizedBox(height: 30),
+              if (data.isNotEmpty)
+                Text(
+                  'QR Code will appear here',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+            ],
+          ),
         ),
       ),
     );
