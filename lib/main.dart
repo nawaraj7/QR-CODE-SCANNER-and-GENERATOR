@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import'package:qr_flutter/qr_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -116,10 +117,26 @@ class _GenerateQRScreenState extends State<GenerateQRScreen> {
               ),
               SizedBox(height: 30),
               if (data.isNotEmpty)
-                Text(
-                  'QR Code will appear here',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blueAccent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: QrImageView(
+                      data:  data, 
+                      version: QrVersions.auto,
+                      size: 200,
+                      backgroundColor: Colors.white,
+                      ),
+                  ),
+                  SizedBox(height:10),
+                  if (data.isNotEmpty)
+                  Text(
+                    'QR Code for: $data',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  )
             ],
           ),
         ),
